@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CampusConnect</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+
+<div class="browser-window">
+  <div class="browser-bar">
+    <div class="dots" aria-hidden="true"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+    <div class="url-text">campusconnect.ggits.edu</div>
+  </div>
+
+  <header class="navbar">
+    <div class="logo">Campus<span>Connect</span></div>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <span class="nav-item static">Home</span>
+      <button class="nav-item active" id="navExplore" type="button" onclick="openTab('explore')">Explore</button>
+      <button class="nav-item" id="navResources" type="button" onclick="openTab('notes')">Resources</button>
+      <span class="nav-item static">Connections</span>
+      <span class="nav-item static">Chats</span>
+      <button class="profile-btn" type="button">Profile</button>
+    </nav>
+  </header>
+
+  <div class="main-wrap">
+    <aside class="sidebar" aria-label="Student menu">
+      <div class="sidebar-title">Student Menu</div>
+      <div class="side-link static">Dashboard</div>
+      <div class="side-link static">My Profile</div>
+      <div class="side-link static">Ask a Question</div>
+      <div class="side-link static">My Questions</div>
+      <button class="side-link" id="sideNotes" type="button" onclick="openTab('notes')">Notes &amp; Resources</button>
+      <div class="side-link static">Connections</div>
+      <div class="side-link static">Personal Chats</div>
+    </aside>
+
+    <main class="content-area">
+      <!-- Explore Questions -->
+      <section id="tab-explore">
+        <h1 class="page-title">Explore Questions</h1>
+        <p class="page-subtitle">Browse all approved students' questions; search and category filters.</p>
+        <div class="filters">
+          <input type="text" id="qSearch" class="input-box" placeholder="Search questions..." oninput="renderQuestions()" />
+          <select id="qCat" class="select-box" onchange="renderQuestions()">
+            <option value="ALL">All Categories</option>
+            <option value="DSA">DSA</option>
+            <option value="DBMS">DBMS</option>
+            <option value="Projects">Projects</option>
+          </select>
+        </div>
+        <div id="questionsContainer"></div>
+      </section>
+
+      <!-- Notes & Resources -->
+      <section id="tab-notes" hidden>
+        <div class="header-flex">
+          <div>
+            <h1 class="page-title">Notes &amp; Resources</h1>
+            <p class="page-subtitle">Browse PDFs with subject, branch and semester filters; download action.</p>
+          </div>
+          <button class="pill-btn" type="button" onclick="openTab('upload')">UPLOAD NOTES</button>
+        </div>
+        <div class="filters">
+          <input type="text" id="nSearch" class="input-box" placeholder="Search PDF title..." oninput="renderNotes()" />
+          <select id="nSubject" class="select-box" onchange="renderNotes()">
+            <option value="ALL">All Subjects</option>
+            <option value="Data Structures">Data Structures</option>
+            <option value="DBMS">DBMS</option>
+            <option value="Operating Systems">Operating Systems</option>
+          </select>
+          <select id="nBranch" class="select-box" onchange="renderNotes()">
+            <option value="ALL">All Branches</option>
+            <option value="CSE">CSE</option>
+            <option value="IT">IT</option>
+          </select>
+          <select id="nSem" class="select-box" onchange="renderNotes()">
+            <option value="ALL">All Semesters</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+          </select>
+        </div>
+        <div id="notesMsg" class="status-msg" role="status" aria-live="polite"></div>
+        <div id="notesContainer"></div>
+      </section>
+
+      <!-- Upload Notes -->
+      <section id="tab-upload" hidden>
+        <div class="header-flex">
+          <div>
+            <h1 class="page-title">Upload Notes</h1>
+            <p class="page-subtitle">Choose PDF, enter title and academic details, then upload.</p>
+          </div>
+          <button class="pill-btn" type="button" onclick="openTab('notes')">NOTES &amp; RESOURCES</button>
+        </div>
+
+        <form class="upload-card" id="uploadForm" onsubmit="uploadPdf(event)">
+          <div class="upload-top">
+            <div class="upload-heading">Share study material</div>
+            <span class="pill-btn static">UPLOAD</span>
+          </div>
+          <div class="field-row">
+            <label class="field-label" for="pdfInput">PDF file</label>
+            <input type="file" id="pdfInput" accept=".pdf,application/pdf" required />
+          </div>
+          <div class="field-row">
+            <label class="field-label" for="titleInput">Resource title</label>
+            <input type="text" id="titleInput" class="underline-input" placeholder="e.g. Computer Networks Unit 1" required />
+          </div>
+          <div class="field-row">
+            <label class="field-label" for="subBranchInput">Subject / Branch</label>
+            <input type="text" id="subBranchInput" class="underline-input" placeholder="e.g. DBMS / CSE" required />
+            <label for="semInput">Semester</label>
+            <input type="number" id="semInput" class="underline-input sem" min="1" max="8" placeholder="5" required />
+          </div>
+          <div class="field-row">
+            <label class="field-label" for="descInput">Description</label>
+            <input type="text" id="descInput" class="underline-input" placeholder="Short description" />
+          </div>
+          <button type="submit" class="primary-btn">Upload PDF</button>
+          <div id="uploadMsg" class="status-msg" role="status" aria-live="polite"></div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <footer class="footer">Campus Connect | Student community portal</footer>
+</div>
+
+<!-- Question details modal -->
+<div class="modal-bg" id="qModal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="mTitle" class="modal-title"></h3>
+      <button class="close-modal" type="button" onclick="closeModal()">Close</button>
+    </div>
+    <p id="mMeta" class="item-meta" style="margin-bottom:8px;"></p>
+    <p id="mDetails" class="modal-details"></p>
+    <div style="margin-bottom:12px;">
+      <button class="pill-btn" type="button" id="mLikeBtn" onclick="likeQuestion()">LIKE</button>
+    </div>
+    <div id="mAnswers"></div>
+    <form class="reply-form" onsubmit="submitReply(event)">
+      <input type="text" id="replyBox" class="reply-input" placeholder="Write an answer..." required />
+      <button type="submit" class="primary-btn">Reply</button>
+    </form>
+  </div>
+</div>
+
+<!-- PDF viewer modal -->
+<div class="modal-bg" id="pdfModal" role="dialog" aria-modal="true" aria-labelledby="pdfTitle">
+  <div class="modal-card pdf-card">
+    <div class="modal-header">
+      <h3 id="pdfTitle" class="modal-title"></h3>
+      <div class="pdf-actions">
+        <button class="pill-btn solid" type="button" id="pdfDownloadBtn">DOWNLOAD</button>
+        <button class="close-modal" type="button" onclick="closePdf()">Close</button>
+      </div>
+    </div>
+    <div id="pdfPages" class="pdf-pages"></div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
